@@ -11,10 +11,12 @@ public class BallController : MonoBehaviour
     private int player2Score = 0;
 
     public float baseSpeed = 0.4f;
-    public float maxSpeed = 3f;
+    public float maxSpeed = 1.5f;
+    public float bounceSpeed = 0.1f;
     public float margin = 0.2f;
 
-    private float currentSpeedH = 0;
+
+    public float currentSpeedH = 0;
     private float currentSpeedV = 0;
     private Rigidbody2D rigidBody;
     // Start is called before the first frame update
@@ -28,14 +30,13 @@ public class BallController : MonoBehaviour
         }
         else
         {
-            currentSpeedH = -baseSpeed;
+            currentSpeedH = baseSpeed;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     private void FixedUpdate()
@@ -48,21 +49,27 @@ public class BallController : MonoBehaviour
     {
         if(collision.gameObject.tag == "Paddle")
         {
-            currentSpeedH = -1 * currentSpeedH;
-            float ballY = transform.position.y;
-            float paddleY = collision.collider.bounds.center.y;
-            float paddleH = collision.collider.bounds.size.y;
-            if(ballY < paddleY - (paddleH / 2) * margin)
-            {
-                currentSpeedV = -baseSpeed;
-            }else if (ballY > paddleY + (paddleH/2)*margin)
-            {
-                currentSpeedV = baseSpeed;
-            }
-            else
-            {
-                currentSpeedV = 0;
-            }
+            //if (currentSpeedH < maxSpeed)
+            //{
+               // baseSpeed += bounceSpeed;
+                currentSpeedH += -bounceSpeed;
+                currentSpeedH = -1 * currentSpeedH;
+                float ballY = transform.position.y;
+                float paddleY = collision.collider.bounds.center.y;
+                float paddleH = collision.collider.bounds.size.y;
+                if (ballY < paddleY - (paddleH / 2) * margin)
+                {
+                    currentSpeedV = -baseSpeed;
+                }
+                else if (ballY > paddleY + (paddleH / 2) * margin)
+                {
+                    currentSpeedV = baseSpeed;
+                }
+                else
+                {
+                    currentSpeedV = 0;
+                }
+            //}
         }else if (collision.gameObject.tag == "Wall")
         {
             currentSpeedV = -1 * currentSpeedV;
