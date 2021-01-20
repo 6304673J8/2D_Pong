@@ -19,6 +19,7 @@ public class BallController : MonoBehaviour
     public float currentSpeedH = 0;
     private float currentSpeedV = 0;
     private Rigidbody2D rigidBody;
+    public Text scoreBoard_P1, scoreBoard_P2;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,10 +35,14 @@ public class BallController : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     // Update is called once per frame
     void Update()
     {
     }
+=======
+
+>>>>>>> Stashed changes
 
     private void FixedUpdate()
     {
@@ -73,6 +78,7 @@ public class BallController : MonoBehaviour
         }else if (collision.gameObject.tag == "Wall")
         {
             currentSpeedV = -1 * currentSpeedV;
+
         }else if (collision.gameObject.tag == "Goal")
         {
             transform.position = new Vector3(0,0,1);
@@ -81,23 +87,19 @@ public class BallController : MonoBehaviour
             currentSpeedV = -Mathf.Sign(currentSpeedV) * baseSpeed;
 
             float goalX = collision.transform.position.x;
-            GameObject scoreBoard = null;
+            
             int score = 0;
             if(goalX < 0) //P2 Scores
             {
                 player2Score++;
-                scoreBoard = player2Points;
+                scoreBoard_P2.text = player2Score.ToString();
                 score = player2Score;
             }
             else
             {
                 player1Score++;
-                scoreBoard = player1Points;
+                scoreBoard_P1.text = player1Score.ToString();
                 score = player1Score;
-            }
-            if(scoreBoard != null)
-            {
-                scoreBoard.GetComponent<Text>().text = score.ToString();
             }
         }
     }
