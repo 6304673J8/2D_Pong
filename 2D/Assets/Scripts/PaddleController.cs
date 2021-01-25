@@ -14,49 +14,65 @@ public class PaddleController : MonoBehaviour
     private float currentSpeedV = 0.0f;
     private Rigidbody2D rigidBody;
 
-    //AI
+    //private AudioSource audio;
+    //AI deprecated
     public GameObject Ball;
-    private Transform aiPaddle;
-    private float aiDirection = 1f;
-    public float aiSpeed = 1.75f;
-    public float topBound = 1f;
-    public float bottomBound = -1f;
     // Start is called before the first frame update
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
-        aiPaddle = this.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
         float delta = Time.deltaTime * 1000;
-        KeyCode upButton = KeyCode.None;
-        KeyCode downButton = KeyCode.None;
 
-        switch (controller)
+        if (controller != Controller.AI)
         {
-            default: break;
-            case Controller.PLAYER1:
-                upButton = KeyCode.W;
-                downButton = KeyCode.S;
-                break;
-            case Controller.PLAYER2:
-                upButton = KeyCode.UpArrow;
-                downButton = KeyCode.DownArrow;
-                break;
-            //case Controller.AI:
-                
+
+
+            KeyCode upButton = KeyCode.None;
+            KeyCode downButton = KeyCode.None;
+
+
+            switch (controller)
+            {
+                default: break;
+                case Controller.PLAYER1:
+                    upButton = KeyCode.W;
+                    downButton = KeyCode.S;
+                    break;
+                case Controller.PLAYER2:
+                    upButton = KeyCode.UpArrow;
+                    downButton = KeyCode.DownArrow;
+                    break;
+                    /*case Controller.AI:
+                        upButton = KeyCode.UpArrow;
+                        downButton = KeyCode.DownArrow;
+                        break;
+                    */
+            }
+            direction = Direction.NONE;
+            if (upButton != KeyCode.None && downButton != KeyCode.None)
+            {
+                if (Input.GetKey(upButton))
+                {
+                    direction = Direction.UP;
+                }
+                else if (Input.GetKey(downButton))
+                {
+                    direction = Direction.DOWN;
+                }
+            }
         }
-        direction = Direction.NONE;
-        if (upButton != KeyCode.None && downButton != KeyCode.None)
+        else
         {
-            if (Input.GetKey(upButton))
+            if (Ball.transform.position.y > transform.position.y + 1)
             {
                 direction = Direction.UP;
             }
-            else if (Input.GetKey(downButton))
+            else if (Ball.transform.position.y < transform.position.y - 1)
             {
                 direction = Direction.DOWN;
             }
@@ -70,67 +86,19 @@ public class PaddleController : MonoBehaviour
         if (direction == Direction.UP)
         {
             currentSpeedV = baseSpeed;
-        } else if (direction == Direction.DOWN)
+        }
+        else if (direction == Direction.DOWN)
         {
             currentSpeedV = -baseSpeed;
         }
-        if (controller == Controller.AI)
+        rigidBody.velocity = new Vector2(0, currentSpeedV * delta);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ball")
         {
-            if (Ball.transform.position.y > aiPaddle.position.y)
-            {
-                if (rigidBody.velocity.y < 0)
-                {
-                    rigidBody.velocity = Vector2.zero;
-                }
-                rigidBody.velocity = Vector2.Lerp(rigidBody.velocity, Vector2.up * aiSpeed, aiDirection * Time.deltaTime);
-            }
-            else if (Ball.transform.position.y < transform.position.y)
-            {
-                if (rigidBody.velocity.y > 0) rigidBody.velocity = Vector2.zero;
-                rigidBody.velocity = Vector2.Lerp(rigidBody.velocity, Vector2.down * aiSpeed, aiDirection * Time.deltaTime);
-            }
-            else
-            {
-                rigidBody.velocity = Vector2.Lerp(rigidBody.velocity, Vector2.zero * aiSpeed, aiDirection * Time.deltaTime);
-            }
+            //audio.Play();
         }
     }
-    /*private void aiLogic()
-    {
-        aiPaddle = this.transform;
-        if (aiPaddle.position.x < Ball.transform.position.x)
-        {
-            if (aiPaddle.position.y < Ball.transform.position.y)
-            {
-                rigidBody.velocity = new Vector2(0, 1) * aiSpeed;
-            }
-            else if (aiPaddle.position.y > Ball.transform.position.y)
-            {
-                rigidBody.velocity = new Vector2(0, -1) * aiSpeed;
-            }
-            else
-            {
-                rigidBody.velocity = new Vector2(0, 0) * aiSpeed;
-            }
-        }
-    }*/
 }
-    /*private void aiLogic() 
-    {
-        float delta = Time.fixedDeltaTime;
-        ball = GameObject.FindGameObjectWithTag("Ball").transform;
-        ballRigidBody = ball.GetComponent<Rigidbody2D>();
-        aiDirection = ball.position.y - transform.position.y;
-        if (ballRigidBody.velocity.x < 0)
-        {
-            if (aiDirection > 0)
-            {
-                move.y = aiSpeed * Mathf.Min(aiDirection, 1.0f);
-            }
-            if (aiDirection < 0)
-            {
-                move.y = -(aiSpeed * Mathf.Min(-aiDirection, 1.0f));
-            }
-            transform.position += move * delta;
-        }
-    }*/
