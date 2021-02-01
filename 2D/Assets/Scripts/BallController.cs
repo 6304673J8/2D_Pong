@@ -14,7 +14,8 @@ public class BallController : MonoBehaviour
     public float maxSpeed = 1.5f;
     public float bounceSpeed = 0.1f;
     public float margin = 0.2f;
-
+    public float multiplier = 1.0f;
+    public float max_acceleration = 5.0f;
 
     public float currentSpeedH = 0;
     private float currentSpeedV = 0;
@@ -52,39 +53,39 @@ public class BallController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Paddle")
-        {
-            //if (currentSpeedH < maxSpeed)
-            //{
-               // baseSpeed += bounceSpeed;
-                currentSpeedH += -bounceSpeed;
-                currentSpeedH = -1 * currentSpeedH;
-                float ballY = transform.position.y;
-                float paddleY = collision.collider.bounds.center.y;
-                float paddleH = collision.collider.bounds.size.y;
-                if (ballY < paddleY - (paddleH / 2) * margin)
-                {
-                    currentSpeedV = -baseSpeed;
-                }
-                else if (ballY > paddleY + (paddleH / 2) * margin)
-                {
-                    currentSpeedV = baseSpeed;
-                }
-                else
-                {
-                    currentSpeedV = 0;
-                }
-            //}
+        if(collision.gameObject.tag == "Paddle") {
+            multiplier += 0.1f;
+            if (multiplier > 5)
+            {
+                multiplier = 5;
+            }
+            currentSpeedH = -1 * Mathf.Sign(currentSpeedH) * baseSpeed * multiplier;
+            float ballY = transform.position.y;
+            float paddleY = collision.collider.bounds.center.y;
+            float paddleH = collision.collider.bounds.size.y;
+            if (ballY < paddleY - (paddleH / 2) * margin)
+            {
+                currentSpeedV = -baseSpeed;
+            }
+            else if (ballY > paddleY + (paddleH / 2) * margin)
+            {
+                currentSpeedV = baseSpeed;
+            }
+            else
+            {
+                currentSpeedV = 0;
+            }
         }else if (collision.gameObject.tag == "Wall")
         {
             currentSpeedV = -1 * currentSpeedV;
 
         }else if (collision.gameObject.tag == "Goal")
         {
+            multiplier = 1.0f;
             transform.position = new Vector3(0,0,1);
 
-            currentSpeedH = -Mathf.Sign(currentSpeedH) * baseSpeed;
-            currentSpeedV = -Mathf.Sign(currentSpeedV) * baseSpeed;
+            currentSpeedH = -Mathf.Sign(currentSpeedH) * baseSpeed * multiplier;
+            currentSpeedV = -Mathf.Sign(currentSpeedV) * baseSpeed * multiplier;
 
             float goalX = collision.transform.position.x;
             
